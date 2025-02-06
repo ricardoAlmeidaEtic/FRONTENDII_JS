@@ -10,7 +10,7 @@ type User = {
     email: string;
     age: number;
     messages: Message[];
-    friends?: Friends[]; // ✅ Adicionando a propriedade ausente
+    friends?: Friends[];
 };
 
 type Group = {
@@ -44,7 +44,7 @@ const user: User = {
             likes: 0,
         }
     ],
-    friends: [ // ✅ Agora a propriedade "friends" está correta
+    friends: [
         {
             id: 0,
             person1: {
