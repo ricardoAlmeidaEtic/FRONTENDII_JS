@@ -1,0 +1,102 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+@keyframes rainbowOutline {
+  0% { text-shadow: 0 0 5px red, 0 0 10px red, 0 0 15px red; }
+  16% { text-shadow: 0 0 5px orange, 0 0 10px orange, 0 0 15px orange; }
+  32% { text-shadow: 0 0 5px yellow, 0 0 10px yellow, 0 0 15px yellow; }
+  48% { text-shadow: 0 0 5px green, 0 0 10px green, 0 0 15px green; }
+  64% { text-shadow: 0 0 5px blue, 0 0 10px blue, 0 0 15px blue; }
+  80% { text-shadow: 0 0 5px indigo, 0 0 10px indigo, 0 0 15px indigo; }
+  100% { text-shadow: 0 0 5px violet, 0 0 10px violet, 0 0 15px violet; }
+}
+
+.rainbow-text {
+  font-size: 3rem;
+  font-weight: 900;
+  color: white; /* Ensures readability */
+  text-transform: uppercase;
+  text-align: center;
+  animation: rainbowOutline 3s infinite linear;
+  padding: 20px;
+  display: inline-block;
+}
+
+
+.cardItem {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  max-width: 300px;
+  margin: 16px auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.cardItem:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.cardItem-title {
+  font-size: 1.5em;
+  margin-bottom: 8px;
+}
+
+.cardItem-description {
+  font-size: 1em;
+  margin-bottom: 16px;
+}
+
+.cardItem-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.cardItem-button:hover {
+  background-color: #0056b3;
+}
