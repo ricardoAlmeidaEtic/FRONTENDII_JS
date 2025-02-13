@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Counter increments correctly 1`] = `
+<div>
+  <div>
+    <button>
+      Esconder
+    </button>
+    <div
+      class="card"
+    >
+      <h2>
+        Ricardo: 
+        0
+         anos!
+      </h2>
+      <button>
+        click
+      </button>
+    </div>
+  </div>
+</div>
+`;
