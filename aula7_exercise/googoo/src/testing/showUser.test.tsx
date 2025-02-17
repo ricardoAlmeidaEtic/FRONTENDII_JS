@@ -1,9 +1,9 @@
-import Counter from '../components/Counter';
 import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import ShowUser from '../components/ShowUser';
 
 test('Counter increments correctly', () => {
-  render(<Counter />);
+  render(<ShowUser />);
   
   const button = screen.getByRole('button', { name: 'Ricardo' });
   fireEvent.click(button);

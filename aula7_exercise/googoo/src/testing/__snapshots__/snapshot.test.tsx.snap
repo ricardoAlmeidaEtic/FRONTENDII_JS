@@ -10,13 +10,9 @@ exports[`Counter increments correctly 1`] = `
       class="card"
     >
       <h2>
-        Ricardo: 
-        0
-         anos!
+        User: 
+        Ricardo
       </h2>
-      <button>
-        click
-      </button>
     </div>
   </div>
 </div>

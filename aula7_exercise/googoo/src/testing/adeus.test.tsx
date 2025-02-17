@@ -1,8 +1,8 @@
-import Saudacao from '../components/Saudacao';
+import Adeus from '../components/Adeus';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-test('Saudacao', () => {
-  render(<Saudacao nome="Mundo" />);
+test('Adeus', () => {
+  render(<Adeus nome="Mundo" />);
   expect(screen.getByText('Olá Mundo!')).toBeInTheDocument();
 });

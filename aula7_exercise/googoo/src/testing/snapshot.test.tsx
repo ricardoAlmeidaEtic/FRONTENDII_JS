@@ -1,7 +1,7 @@
-import Counter from '../components/Counter';
+import ShowUser from '../components/ShowUser';
 import { render } from '@testing-library/react';
 
 test('Counter increments correctly', () => {
-  const { container } = render(<Counter />);
+  const { container } = render(<ShowUser />);
   expect(container).toMatchSnapshot();
 });
