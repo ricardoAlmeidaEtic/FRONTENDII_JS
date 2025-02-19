@@ -4,26 +4,35 @@ import React, { useState, useEffect, useRef } from "react";
 interface MusicPlayerProps {
   trackName: string;
   artistName: string;
+  onClose: () => void;
 }
 
-const MusicPlayer: React.FC<MusicPlayerProps> = ({ trackName, artistName }) => {
+const MusicPlayer: React.FC<MusicPlayerProps> = ({ trackName, artistName, onClose }) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
-  
-  const videoRef = useRef<HTMLVideoElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+
+  // Auto-play when component mounts
+  useEffect(() => {
+    const playMedia = async () => {
+      if (audioRef.current && videoRef.current) {
+        try {
+          await audioRef.current.play();
+          await videoRef.current.play();
+          setIsPlaying(true);
+        } catch (error) {
+          console.error('Autoplay failed:', error);
+        }
+      }
+    };
+    
+    playMedia();
+  }, []); // Empty dependency array means this runs once on mount
 
   const handlePlayPause = () => {
     setIsPlaying((prev) => {
       const newState = !prev;
-      
-      if (videoRef.current) {
-        if (newState) {
-          videoRef.current.play();
-        } else {
-          videoRef.current.pause();
-        }
-      }
       
       if (audioRef.current) {
         if (newState) {
@@ -32,7 +41,15 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ trackName, artistName }) => {
           audioRef.current.pause();
         }
       }
-      
+  
+      if (videoRef.current) {
+        if (newState) {
+          videoRef.current.play();
+        } else {
+          videoRef.current.pause();
+        }
+      }
+  
       return newState;
     });
   };
@@ -46,112 +63,88 @@ const MusicPlayer: React.FC<MusicPlayerProps> = ({ trackName, artistName }) => {
     };
 
     audio.addEventListener("timeupdate", updateProgress);
-
-    return () => {
-      audio.removeEventListener("timeupdate", updateProgress);
-    };
+    return () => audio.removeEventListener("timeupdate", updateProgress);
   }, []);
 
-  const handlePrev = () => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = 0;
-      setProgress(0);
-    }
-  };
-  
-  const handleNext = () => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = audioRef.current.duration;
-      setProgress(100);
-    }
-  };
-  
   return (
-    <div className="card w-80 bg-base-100 shadow-xl">
-      <figure>
-        <video
-          ref={videoRef}
-          className="w-full h-48 object-cover"
-          loop
-          muted
-          playsInline
-          width="100%"
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="bg-slate-800/95 rounded-xl p-8 w-full max-w-2xl shadow-xl relative">
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-white transition"
         >
-          <source src="https://i.gifer.com/5RT9.mp4" type="video/mp4" />
-        </video>
-      </figure>
-
-      <audio ref={audioRef} src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" />
-
-      <div className="p-4 text-center">
-        <h2 className="text-lg font-bold">{trackName}</h2>
-        <p className="text-sm text-gray-500">{artistName}</p>
-      </div>
-      <div className="flex items-center justify-center space-x-4 mt-4">
-        <button className="btn btn-ghost" onClick={handlePrev}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M11 19l-7-7 7-7M19 19l-7-7 7-7"
-            />
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
 
-        <button className="btn btn-primary" onClick={handlePlayPause}>
-          {isPlaying ? (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth="2" 
-                d="M10 9v6m4-6v6" 
-              />
-            </svg>
-          ) : (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path d="M5 3.868v16.264c0 .869.971 1.407 1.694.928l13.236-8.132a1.08 1.08 0 000-1.856L6.694 3.04C5.971 2.56 5 3 5 3.868z" />
-            </svg>
-          )}
-        </button>
-
-        <button className="btn btn-ghost" onClick={handleNext}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+        {/* Video Artwork */}
+        <div className="relative aspect-square mb-6 rounded-lg overflow-hidden">
+          <video
+            ref={videoRef}
+            className="w-full h-full object-cover"
+            loop
+            muted={!isPlaying}
+            playsInline
           >
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth="2" 
-              d="M13 5l7 7-7 7M5 5l7 7-7 7" 
-            />
-          </svg>
-        </button>
-      </div>
+            <source src="https://i.gifer.com/5RT9.mp4" type="video/mp4" />
+          </video>
+        </div>
 
-      <progress className="progress progress-primary w-full mt-4" value={progress} max={100}></progress>
+        {/* Track Info */}
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold mb-2">{trackName}</h2>
+          <p className="text-gray-400">{artistName}</p>
+        </div>
+
+        {/* Progress Bar */}
+        <div className="w-full bg-gray-700 rounded-full h-1.5 mb-6">
+          <div
+            className="bg-green-500 h-1.5 rounded-full transition-all duration-100"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+
+        {/* Controls */}
+        <div className="flex items-center justify-center gap-4">
+          <button
+            onClick={() => audioRef.current && (audioRef.current.currentTime = 0)}
+            className="text-gray-400 hover:text-white p-2"
+          >
+            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M4 4h4v16H4zm12 0h4v16h-4z" />
+            </svg>
+          </button>
+
+          <button
+            onClick={handlePlayPause}
+            className="bg-green-500 text-white rounded-full p-4 hover:bg-green-400 transition"
+          >
+            {isPlaying ? (
+              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M6 4h4v16H6zm8 0h4v16h-4z" />
+              </svg>
+            ) : (
+              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M5 3.868v16.264c0 .869.971 1.407 1.694.928l13.236-8.132a1.08 1.08 0 000-1.856L6.694 3.04C5.971 2.56 5 3 5 3.868z" />
+              </svg>
+            )}
+          </button>
+
+          <button
+            onClick={() => audioRef.current && (audioRef.current.currentTime = audioRef.current.duration)}
+            className="text-gray-400 hover:text-white p-2"
+          >
+            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M4 4h4v16H4zm6 0h4v16h-4zm6 0h4v16h-4z" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Hidden Audio Element */}
+        <audio ref={audioRef} src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" />
+      </div>
     </div>
   );
 };
