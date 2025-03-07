@@ -2,9 +2,22 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const Drawer = () => {
   const [showSearch, setShowSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
+
+  const handleSearch = () => {
+    const query = searchQuery.trim();
+    if (!query) return;
+    
+    const encodedQuery = encodeURIComponent(query);
+    router.push(`/homepage?q=${encodedQuery}`);
+    setShowSearch(false);
+    setSearchQuery("");
+  };
 
   return (
     <div className="drawer-side z-50">
@@ -47,6 +60,9 @@ const Drawer = () => {
                   placeholder="Search songs, artists..."
                   className="w-full px-4 py-2 rounded-lg bg-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50"
                   autoFocus
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 />
               </div>
             )}
@@ -59,11 +75,6 @@ const Drawer = () => {
             Your Library
           </Link>
         </nav>
-
-        {/* Install App Button */}
-        <button className="w-full py-2 px-4 bg-white/10 hover:bg-white/20 rounded-full text-white transition">
-          Install App
-        </button>
       </div>
     </div>
   );

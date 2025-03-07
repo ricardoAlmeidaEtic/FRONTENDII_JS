@@ -1,95 +1,77 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import MusicPlayer from "@/components/MusicPlayer";
-
-type Track = {
-id: string;
-title: string;
-artist: string;
-duration: string;
-image: string;
-};
+import TrackItem from "@/components/TrackItem";
+import { database } from '@/lib/db';
 
 const Page = () => {
-    const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
+  const [selectedTrack, setSelectedTrack] = useState<typeof database.tracks[0] | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  const urlQuery = searchParams.get('q') || '';
+  const filteredTracks = urlQuery ? database.search(urlQuery).filter(t => t.type === 'song') : database.getSongs();
 
-    // Sample tracks data
-    const tracks: Track[] = [
-        {
-            id: '1',
-            title: 'Bohemian Rhapsody',
-            artist: 'Queen',
-            duration: '5:55',
-            image: '/queen.jpg'
-        },
-        {
-            id: '2',
-            title: 'Hotel California',
-            artist: 'Eagles',
-            duration: '6:30',
-            image: '/eagles.jpg'
-        },
-        {
-            id: '3',
-            title: 'Sweet Child O Mine',
-            artist: 'Guns N Roses',
-            duration: '5:56',
-            image: '/guns.jpg'
-        },
-    ];
+  const handleSearch = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      const query = searchQuery.trim();
+      const encodedQuery = encodeURIComponent(query);
+      router.push(`/homepage?q=${encodedQuery}`);
+    }
+  };
 
-    return (
-        <div className="min-h-screen bg-slate-900 text-white">
-        {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-4 py-8">
-            <header className="mb-8">
+  useEffect(() => {
+    setSearchQuery(decodeURIComponent(urlQuery));
+  }, [urlQuery]);
+
+  return (
+    <div className="min-h-screen bg-slate-900 text-white">
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <header className="mb-8 flex justify-between items-center gap-4">
+          <div>
             <h1 className="text-3xl font-bold">Good Morning</h1>
             <p className="text-gray-400">Recent plays</p>
-            </header>
+          </div>
+          <input
+            type="text"
+            placeholder="Search songs, artists..."
+            className="px-4 py-2 rounded-lg bg-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-white/50 w-64"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={handleSearch}
+          />
+        </header>
 
-            {/* Tracks Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {tracks.map((track) => (
-                <div
-                key={track.id}
-                onClick={() => setSelectedTrack(track)}
-                className="bg-white/5 p-4 rounded-lg hover:bg-white/10 transition cursor-pointer group"
-                >
-                <div className="relative mb-4">
-                    <img
-                    src={track.image}
-                    alt={track.title}
-                    className="w-full aspect-square object-cover rounded-lg"
-                    />
-                    <button className="absolute bottom-2 right-2 w-12 h-12 bg-green-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                    <svg className="w-6 h-6 ml-3" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M5 3l14 9-14 9V3z" />
-                    </svg>
-                    </button>
-                </div>
-                <h3 className="font-semibold truncate">{track.title}</h3>
-                <p className="text-gray-400 text-sm">{track.artist}</p>
-                </div>
-            ))}
-            </div>
+        {/* Tracks Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {filteredTracks.map((track) => (
+            <TrackItem
+              key={track.id}
+              track={track}
+              onClick={setSelectedTrack}
+            />
+          ))}
         </div>
+      </div>
 
-            {/* Music Player (Conditional Render) */}
-            
-            {selectedTrack && (
-            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center">
-                <div className="bg-slate-800/95 rounded-xl p-8 w-full max-w-2xl mx-4 shadow-xl">
-                <MusicPlayer
-                    trackName={selectedTrack.title}
-                    artistName={selectedTrack.artist}
-                    onClose={() => setSelectedTrack(null)}
-                />
-                </div>
-            </div>
-            )}
+      {/* Music Player */}
+      {selectedTrack && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center">
+          <div className="bg-slate-800/95 rounded-xl p-8 w-full max-w-2xl mx-4 shadow-xl">
+            <MusicPlayer
+              trackName={selectedTrack.title}
+              artistName={selectedTrack.artist}
+              onClose={() => setSelectedTrack(null)}
+            />
+          </div>
         </div>
-    );
+      )}
+    </div>
+  );
 };
 
 export default Page;
